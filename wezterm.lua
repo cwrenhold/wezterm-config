@@ -17,8 +17,6 @@ config.enable_tab_bar = true
 config.tab_bar_at_bottom = true
 config.hide_tab_bar_if_only_one_tab = true
 
--- config.default_prog = { "tmux" }
-
 -- config.enable_scroll_bar = false
 config.window_padding = {
   left = 0,
@@ -65,6 +63,15 @@ wezterm.on(
     return title
   end
 )
+
+-- Machine specific configuration
+local hostname = wezterm.hostname()
+local font_size = 12
+if hostname == "MacBook-Pro" then
+  font_size = 15
+end
+
+config.font_size = font_size
 
 return config
 

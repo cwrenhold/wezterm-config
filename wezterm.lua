@@ -16,6 +16,7 @@ config.use_fancy_tab_bar = false
 config.enable_tab_bar = true
 config.tab_bar_at_bottom = true
 config.hide_tab_bar_if_only_one_tab = true
+config.tab_max_width = 30 -- if there's space, make the tabs wider so more of the path is visible
 
 -- config.enable_scroll_bar = false
 config.window_padding = {
@@ -32,11 +33,12 @@ end
 local function get_cwd_for_pane(pane)
   local cwd = pane.current_working_dir
   if cwd and cwd.path then
-    -- local home_directory = os.getenv('HOME')
-    -- if home_directory then
-    --   cwd.path = string.gsub(cwd.path, home_directory, '~')
-    -- end
-    return cwd.path
+    local home_directory = os.getenv('HOME')
+    local path = cwd.path
+    if home_directory then
+      return string.gsub(path, home_directory, '~')
+    end
+    return path
   end
   return nil
 end
@@ -66,9 +68,32 @@ wezterm.on(
     if cwd then
       local parts = split_by_character(cwd, '/')
       local last_part = parts[#parts]
-      title = title .. " " .. last_part
+
+      -- Based on the number of parts, determine the number of characters to display
+      local num_chars
+      if #parts > 5 then
+        num_chars = 1
+      elseif #parts > 3 then
+        num_chars = 2
+      else
+        num_chars = 3
+      end
+
+      -- For everything except the last part, just take the first characters for display
+      local trimmed_parts = {}
+      for i = 1, #parts - 1 do
+        table.insert(trimmed_parts, string.sub(parts[i], 1, num_chars))
+      end
+
+      -- If there were any trimmer parts then include them, otherwise just the last part
+      if #trimmed_parts > 0 then
+        local display_parts = table.concat(trimmed_parts, '/')
+        title = title .. " " .. display_parts .. "/" .. last_part
+      else
+        title = title .. " " .. last_part
+      end
     end
-    return tab.tab_index .. ": " .. title .. " "
+    return " " .. tab.tab_index .. ": " .. title .. " "
   end
 )
 

@@ -29,17 +29,44 @@ local function basename(s)
   return string.gsub(s, '(.*[/\\])(.*)', '%2')
 end
 
+local function get_cwd_for_pane(pane)
+  local cwd = pane.current_working_dir
+  if cwd and cwd.path then
+    -- local home_directory = os.getenv('HOME')
+    -- if home_directory then
+    --   cwd.path = string.gsub(cwd.path, home_directory, '~')
+    -- end
+    return cwd.path
+  end
+  return nil
+end
+
+local function split_by_character(s, c)
+  local parts = {}
+  for part in string.gmatch(s, '[^' .. c .. ']+') do
+    table.insert(parts, part)
+  end
+  return parts
+end
+
 wezterm.on(
   'format-tab-title',
   ---@diagnostic disable-next-line: unused-local, redefined-local
   function (tab, tabs, panes, config, hover, max_width)
-    local process = basename(tab.active_pane.foreground_process_name)
+    local pane = tab.active_pane
+    local process = basename(pane.foreground_process_name)
+    local cwd = get_cwd_for_pane(pane)
     local title = ""
     if process then
       title = process
     end
     if #tab.panes > 1 then
       title = title .. " (" .. #tab.panes .. "w)"
+    end
+    if cwd then
+      local parts = split_by_character(cwd, '/')
+      local last_part = parts[#parts]
+      title = title .. " " .. last_part
     end
     return tab.tab_index .. ": " .. title .. " "
   end
@@ -50,6 +77,7 @@ wezterm.on(
   ---@diagnostic disable-next-line: unused-local, redefined-local
   function (tab, pane, tabs, panes, config)
     local process = basename(pane.foreground_process_name)
+    local cwd = get_cwd_for_pane(pane)
     local title = "wezterm@"
     if process then
       title = title .. process
@@ -59,6 +87,9 @@ wezterm.on(
     end
     if #tabs > 1 then
       title = title .. " [" .. (tab.tab_index + 1) .. "/" .. #tabs .. "]"
+    end
+    if cwd then
+      title = title .. " " .. cwd
     end
     return title
   end

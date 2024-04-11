@@ -16,7 +16,8 @@ config.use_fancy_tab_bar = false
 config.enable_tab_bar = true
 config.tab_bar_at_bottom = true
 config.hide_tab_bar_if_only_one_tab = true
-config.tab_max_width = 30 -- if there's space, make the tabs wider so more of the path is visible
+config.tab_max_width = 40 -- if there's space, make the tabs wider so more of the path is visible
+config.show_new_tab_button_in_tab_bar = false
 
 -- config.enable_scroll_bar = false
 config.window_padding = {
@@ -59,12 +60,17 @@ wezterm.on(
     local process = basename(pane.foreground_process_name)
     local cwd = get_cwd_for_pane(pane)
     local title = ""
+
+    title = title .. " " .. tab.tab_index .. ": "
+
     if process then
-      title = process
+      title = title .. process
     end
+
     if #tab.panes > 1 then
       title = title .. " (" .. #tab.panes .. "w)"
     end
+
     if cwd then
       local parts = split_by_character(cwd, '/')
       local last_part = parts[#parts]
@@ -75,8 +81,8 @@ wezterm.on(
         num_chars = 1
       elseif #parts > 3 then
         num_chars = 2
-      else
-        num_chars = 3
+      elseif #parts > 1 then
+        num_chars = 4
       end
 
       -- For everything except the last part, just take the first characters for display
@@ -93,7 +99,8 @@ wezterm.on(
         title = title .. " " .. last_part
       end
     end
-    return " " .. tab.tab_index .. ": " .. title .. " "
+
+    return title .. " "
   end
 )
 
@@ -119,6 +126,17 @@ wezterm.on(
     return title
   end
 )
+
+---@diagnostic disable-next-line: unused-local
+wezterm.on('update-right-status', function(window, pane)
+  local date = wezterm.strftime '%Y-%m-%d %H:%M:%S'
+
+  -- Make it italic and underlined
+  window:set_right_status(wezterm.format {
+    -- { Attribute = { Underline = 'Single' } },
+    { Text = date .. ' ' },
+  })
+end)
 
 -- Machine specific configuration
 local hostname = wezterm.hostname()

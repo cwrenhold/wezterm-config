@@ -15,7 +15,7 @@ config.font = wezterm.font_with_fallback {
 config.use_fancy_tab_bar = false
 config.enable_tab_bar = true
 config.tab_bar_at_bottom = true
-config.hide_tab_bar_if_only_one_tab = true
+config.hide_tab_bar_if_only_one_tab = false
 config.tab_max_width = 40 -- if there's space, make the tabs wider so more of the path is visible
 config.show_new_tab_button_in_tab_bar = false
 
@@ -129,7 +129,7 @@ wezterm.on(
 
 ---@diagnostic disable-next-line: unused-local
 wezterm.on('update-right-status', function(window, pane)
-  local date = wezterm.strftime '%Y-%m-%d %H:%M:%S'
+  local date = wezterm.strftime '%Y-%m-%d %H:%M'
 
   -- Make it italic and underlined
   window:set_right_status(wezterm.format {

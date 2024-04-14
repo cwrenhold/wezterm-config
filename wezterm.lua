@@ -68,7 +68,7 @@ wezterm.on(
     end
 
     if #tab.panes > 1 then
-      title = title .. " (" .. #tab.panes .. "w)"
+      title = title .. " (" .. #tab.panes .. "p)"
     end
 
     if cwd then
@@ -115,7 +115,7 @@ wezterm.on(
       title = title .. process
     end
     if #tab.panes > 1 then
-      title = title .. " (" .. #tab.panes .. "w)"
+      title = title .. " (" .. #tab.panes .. "p)"
     end
     if #tabs > 1 then
       title = title .. " [" .. (tab.tab_index + 1) .. "/" .. #tabs .. "]"

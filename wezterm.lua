@@ -134,14 +134,15 @@ wezterm.on('update-right-status', function(window, pane)
   -- Make it italic and underlined
   window:set_right_status(wezterm.format {
     -- { Attribute = { Underline = 'Single' } },
-    { Text = wezterm.hostname() .. ' ' .. date .. ' '  },
+    -- { Text = wezterm.hostname() .. ' ' .. date .. ' '  },
+    { Text = date .. ' '  },
   })
 end)
 
 -- Machine specific configuration
 local hostname = wezterm.hostname()
 local font_size = 12
-if hostname == "MacBook-Pro.localdomain" then
+if hostname == "JUN0844" then
   font_size = 15
 end
 
